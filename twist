@@ -30,7 +30,6 @@ function systemconfig(){
     elrepover6="6-8"
     ETH=""
     PUBLICIP=""
-    PUBLICIPv6=""
     IPREGEX="^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
 }
 
@@ -542,7 +541,6 @@ function sslibevconfigure(){
     "nameserver":"${DNS}",
     "mode":"${MODE}",
     "mtu":${MTU},
-    "ipv6_first":${IPV6FIRST},
     "use_syslog":${SYSLOG},
     "no_delay":${NODELAY}
 }
@@ -602,8 +600,6 @@ EOF
         timemachine "backup" "/etc/resolv.conf" "/etc/twist/resolv.conf"
         echo "nameserver ${DNS1}" >> /etc/resolv.conf
         echo "nameserver ${DNS2}" >> /etc/resolv.conf
-        [ "$IPV6ENABLE" = "false" ] || echo "nameserver ${DNSv6a}" >> /etc/resolv.conf
-        [ "$IPV6ENABLE" = "false" ] || echo "nameserver ${DNSv6b}" >> /etc/resolv.conf
         echo "" >> /etc/resolv.conf
     fi
 }
@@ -958,7 +954,6 @@ function servicesstatus(){
     twistprint banner
     read -p ""
     echo -e "# [\033[32;1mServer IP:\033[0m \033[34;1m${PUBLICIP}\033[0m\c"
-    [ ! "$IPV6ENABLE" = "false" ] && echo -e "(\033[34;1m${PUBLICIPv6}\033[0m)\c"
     echo -e " \033[32;1mPassWord:\033[0m \033[34;1m${PASSWORD}\033[0m \033[32;1mEncryption:\033[0m \033[34;1m${METHOD}\033[0m \033[32;1mOBFS-HOST:\033[0m \033[34;1m${OBFSHOST}\033[0m \033[32]"
     serverrestart "Installation"
 }
