@@ -4,7 +4,6 @@
 ## Next update will provide mptcp feature, this script will be rewrite and use standard commands
 
 function shadowsocksconfig(){
-    SSLOCAL="[\"[::0]\",\"0.0.0.0\"]"
     PORT="443"
     PASSWORD=""
     METHOD="chacha20-ietf-poly1305"
@@ -382,16 +381,6 @@ function systemdetect(){
             echo ""
         fi
     fi
-    DNS="${DNS1},${DNS2},${DNSv6a},${DNSv6b}"
-    if [ -z "$(ip -6 addr show ${ETH})" ] || [ -z "$PUBLICIPv6" ]; then
-        PUBLICIPv6="$(curl -s diagnostic.opendns.com/myip)"
-        if [ -z "$PUBLICIPv6" ] || [ "$PUBLICIPv6" = "$PUBLICIP" ]; then
-            SSLOCAL="\"0.0.0.0\""
-            DNS="${DNS1},${DNS2}"
-            IPV6ENABLE="false"
-            IPV6FIRST="false"
-        fi
-     fi
      [ -z "$MTU" ] && MTU="$(cat /sys/class/net/${ETH}/mtu)"
      [ -z "$MTU" ] && MTU="1492"
 }
@@ -539,7 +528,7 @@ function sslibevconfigure(){
     timemachine "backup" "/etc/shadowsocks-libev/config.json" "/etc/twist/config.json"
     cat > /etc/shadowsocks-libev/config.json <<-EOF
 {
-    "server":${SSLOCAL},
+    "server":"0.0.0.0",
     "server_port":${PORT},
     "password":"${PASSWORD}",
     "method":"${METHOD}",
