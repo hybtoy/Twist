@@ -538,7 +538,6 @@ function sslibevconfigure(){
     "fast_open":${FASTOPEN},
     "reuse_port":${REUSEPORT},
     "nofile":512000,
-    "nameserver":"${DNS}",
     "mode":"${MODE}",
     "mtu":${MTU},
     "use_syslog":${SYSLOG},
