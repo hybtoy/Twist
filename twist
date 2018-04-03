@@ -546,11 +546,11 @@ function sslibevconfigure(){
 }
 EOF
 
-cat > /etc/shadowsocks-libev/gqserver.json <<-EOF
+    cat > /etc/shadowsocks-libev/gqserver.json <<-EOF
 {
-	"WebServerAddr":"${OBFSHOST}:443",
-	"Key":"${PASSWORD}",
-	"FastOpen":${FASTOPEN}
+    "WebServerAddr":"${OBFSHOST}:443",
+    "Key":"${PASSWORD}",
+    "FastOpen":${FASTOPEN}
 }
 EOF
 
