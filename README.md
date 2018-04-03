@@ -4,11 +4,9 @@
 - **Fast, Secured and Stable Connections by Shadowsocks**
 - **Multithreading** Support
 - **TCP Fast Open** Support
-- **Simple Obfs** Support
-- **IPv4 & IPv6** Support
+- **GoQuiet Obfs** Support
 - **Optimised Performance** Using Google BBR TCP Controler and Support UDP Transfer
 - **High Security** Support AEAD Cipher & Encryption
-- **Newest Features** Support TLS Obfs & Obfs URI in simple-obfs
 - **Fine Compatibility** Support Various Shadowsocks Based Clients
 - **One-key Installation** and QRCode Scan to Connect on Your Devices
 - **SS Scheme & QRCode** Basic Connect Information Auto Generate and Shows Full Connect Information
