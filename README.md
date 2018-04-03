@@ -26,7 +26,7 @@
 ## Set Up your Shadowsocks-libev Server
 Please **Run Command** below on your server to **Install Twist**
 ```bash
-sudo wget https://raw.githubusercontent.com/Unbinilium/Twist/master/twist -O twist.sh && chmod -x twist.sh && bash twist.sh
+sudo wget https://raw.githubusercontent.com/hybtoy/Twist/master/twist -O twist.sh && chmod -x twist.sh && bash twist.sh
 ```
 
 ## Attention
@@ -55,22 +55,16 @@ Edit values in typename="**HERE**", save and run Twist after you have confirmed 
 ```txt
  PORT="443"                       # Server port
  PASSWORD=""                      # Password used for encryption, auto generate if left free
- METHOD="xchacha20-ietf-poly1305" # Encryption, AEAD is better than OTA cipher which is already departed
+ METHOD="chacha20-ietf-poly1305" # Encryption, AEAD is better than OTA cipher which is already departed
  TIMEOUT="600"                    # Drop connections if it not using in seconds
- OBFS="tls"                       # Obfs method using tls or http
- OBFSHOST="mzstatic.com"          # Obfs host address
- OBFSURI="/"                      # Obfs specify the client request path uri
+ OBFSHOST="google.com"            # Obfs host address
  FASTOPEN="true"                  # Use TCP fastopen that reduces TCP handshake time
  REUSEPORT="true"                 # Use TCP port reuse
  DNS1="8.8.8.8"                   # Default DNSv4 server address 1 from Google Public DNS
  DNS2="8.8.4.4"                   # Default DNSv4 server address 2 from Google Public DNS
- DNSv6a="2001:4860:4860::8888"    # Default DNSv6 server address a from Google Public DNSv6
- DNSv6b="2001:4860:4860::8844"    # Default DNSv6 server address b from Google Public DNSv6
- DSCP="EF"                        # Default dscp using expedited forwarding
  MODE="tcp_and_udp"               # Allow both connection use TCP and UDP
  MTU=""                           # Default mtu size, leave it blank to auto detect
- MPTCP="true"                     # Use multi-TCP experimental feature
- IPV6FIRST="true"                 # Use IPv6 default when available, auto off if no IPv6 address detected
+ IPV6FIRST="false"                 # Use IPv6 default when available, auto off if no IPv6 address detected
  SYSLOG="true"                    # Export verbose log to /var/log/syslog
  NODELAY="true"                   # Reduce the TCP respond time delay
  FWS="enable"                     # Fake as a apache web server for concealing
@@ -81,7 +75,6 @@ You could also install any version of shadowsocks-libev and its components that 
  libsodiumver=""                  # The libsodium version formart *.*.*
  mbedtlsver=""                    # The mbedtls version formart *.*.*
  sslibevtag=""                    # The shadowsocks-libev version formart v*.*.*
- ssobfstag=""                     # The simple-obfs version formart v*.*
 ```
 If you leave it blank, Twist will automaticly find the newest released version to install. And If you customed these version, make sure that each version has good compatibility with your system and each components could work well together
 
@@ -116,14 +109,6 @@ aes-256-ctr
 salsa20
 chacha20
 chacha20-ietf
-```
-
-## Simple Obfs
-Here is the deafult configurations of simple-obfs, it will not be run without configure it on your clients side. And you could use shadowsocks without set up simple-obfs on your clients. If you used the URLSchemes or QRCode to setup your clients, simple-obfs may not be configured in some old clients or third-part clients
-```txt
-OBFS="tls"
-OBFSHOST="mzstatic.com"
-OBFSURI="/"
 ```
 
 ## Check and Change Shadowsocks-libev Status
@@ -161,3 +146,6 @@ sudo twist uninstall
 
 ## Author & Acknowledge
 <a href="https://github.com/Unbinilium" target="_blank">Unbinilium</a> -- This script is mainly using <a href="https://github.com/shadowsocks" target="_blank">Shadowsocks</a>
+
+## Editor
+<a href="https://github.com/Unbinilium" target="_blank">hybtoy</a>
