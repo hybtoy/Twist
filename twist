@@ -7,22 +7,15 @@ function shadowsocksconfig(){
     SSLOCAL="[\"[::0]\",\"0.0.0.0\"]"
     PORT="443"
     PASSWORD=""
-    METHOD="xchacha20-ietf-poly1305"
+    METHOD="chacha20-ietf-poly1305"
     TIMEOUT="1800"
-    OBFS="tls"
-    OBFSHOST="mzstatic.com"
-    OBFSURI="/"
+    OBFSHOST="google.com"
     FASTOPEN="true"
     REUSEPORT="true"
     DNS1="8.8.8.8"
     DNS2="8.8.4.4"
-    DNSv6a="2001:4860:4860::8888"
-    DNSv6b="2001:4860:4860::8844"
-    DSCP="EF"
     MODE="tcp_and_udp"
     MTU=""
-    MPTCP="true"
-    IPV6FIRST="true"
     SYSLOG="true"
     NODELAY="true"
     FWS="enable"
@@ -531,38 +524,18 @@ function sslibevinstall(){
     tar zxf ${sslibevver}.tar.gz
     pushd $sslibevver
     ./configure --disable-documentation
-    make "-j$((MAKECORES+1))" && make ${1} || sslibevinstallerr "shadowsocks-libev-$(echo ${sslibevtag} | sed -e 's/^[a-zA-Z]//g')" err
+    make "-j$((MAKECORES+1))" && make ${1} || 
+    "shadowsocks-libev-$(echo ${sslibevtag} | sed -e 's/^[a-zA-Z]//g')" err
     popd
     ldconfig
-    [ -z "$ssobfstag" ] && ssobfstag="$(wget -qO- https://api.github.com/repos/shadowsocks/simple-obfs/releases/latest | grep 'tag_name' | cut -d\" -f4)"
-    ssobfsver="simple-obfs-$(echo ${ssobfstag} | sed -e 's/^[a-zA-Z]//g')"
-    wget -t 3 -T 30 -nv -O ${ssobfsver}.tar.gz https://github.com/shadowsocks/simple-obfs/archive/${ssobfstag}.tar.gz
-    [ "$?" != "0" ] && sslibevinstallerr "simple-obfs-$(echo ${ssobfstag} | sed -e 's/^[a-zA-Z]//g')"
-    [ -d ${ssobfsver} ] && rm -rf $ssobfsver
-    tar zxf ${ssobfsver}.tar.gz
-    pushd $ssobfsver
-    [ -d libcork ] && rm -rf libcork
-    git clone https://github.com/shadowsocks/libcork.git -b simple-obfs
-    [ "$?" != "0" ] && sslibevinstallerr "libcork"
-    ./autogen.sh
-    ./configure
-    make "-j$((MAKECORES+1))" && make ${1} || sslibevinstallerr "simple-obfs-$(echo ${ssobfstag} | sed -e 's/^[a-zA-Z]//g')" err
-    popd
-    ldconfig
-    [ -f /usr/local/bin/obfs-server ] && ln -s /usr/local/bin/obfs-server /usr/bin
-    rm -rf ${sslibevver}.tar.gz $sslibevver ${ssobfsver}.tar.gz $ssobfsver
+    wget -t 3 -T 30 -nv -O gqserver https://github.com/cbeuw/GoQuiet/releases/download/v1.1.2/gq-server-linux64-1.1.2
+    wget -t 3 -T 30 -nv https://raw.githubusercontent.com/cbeuw/GoQuiet/master/config/gqserver.json
 }
 
 function sslibevconfigure(){
-    OBFSLOCAL="obfs-host"
-    [ "$FWS" = "enable" ] && OBFSLOCAL="failover"
-    OBFSTFO="fast-open;"
-    [ "$FASTOPEN" = "true" ] || OBFSTFO=""
-    OBFSURL=";obfs-uri=${OBFSURI}"
-    [ -z "$OBFSURI" ] && OBFSURL=""
-    [ "$OBFSURI" = "/" ] && OBFSURL=""
     [ -z "$PASSWORD" ] && PASSWORD="$(< /dev/urandom tr -dc 'A-HJ-NPR-Za-km-z2-9-._+?%^&*()' | head -c 8)"
     [ -d /etc/shadowsocks-libev ] || mkdir -p /etc/shadowsocks-libev
+    chmod +x gqserver && mv gqserver /etc/shadowsocks-libev && mv gqserver.json /etc/shadowsocks-libev
     timemachine "backup" "/etc/shadowsocks-libev/config.json" "/etc/twist/config.json"
     cat > /etc/shadowsocks-libev/config.json <<-EOF
 {
@@ -572,21 +545,28 @@ function sslibevconfigure(){
     "method":"${METHOD}",
     "timeout":${TIMEOUT},
     "udp_timeout":${TIMEOUT},
-    "plugin":"obfs-server",
-    "plugin_opts":"obfs=${OBFS};${OBFSTFO}${OBFSLOCAL}=${OBFSHOST}:${PORT}${OBFSURL}",
+    "plugin":"/etc/shadowsocks-libev/gqserver",
+    "plugin_opts":"/etc/shadowsocks-libev/gqserver.json",
     "fast_open":${FASTOPEN},
     "reuse_port":${REUSEPORT},
     "nofile":512000,
     "nameserver":"${DNS}",
-    "dscp":"${DSCP}",
     "mode":"${MODE}",
     "mtu":${MTU},
-    "mptcp":${MPTCP},
     "ipv6_first":${IPV6FIRST},
     "use_syslog":${SYSLOG},
-    "no_delay":${NODELAY},
+    "no_delay":${NODELAY}
 }
 EOF
+
+cat > /etc/shadowsocks-libev/gqserver.json <<-EOF
+{
+	"WebServerAddr":"${OBFSHOST}:443",
+	"Key":"${PASSWORD}",
+	"FastOpen":${FASTOPEN}
+}
+EOF
+
     if [ "$twistinstalled" = "false" ]; then
         timemachine "backup" "/etc/sysctl.conf" "/etc/twist/sysctl.conf"
         cat >> /etc/sysctl.conf <<-EOF
@@ -988,11 +968,9 @@ function servicesstatus(){
     echo -e "        [\033[32;1mPlease Press Enter to Show Connect Infomation and EXIT\033[0m]"
     twistprint banner
     read -p ""
-    echo "ss://$(echo -n "${METHOD}:${PASSWORD}@${PUBLICIP}:${PORT}?plugin=obfs-local;obfs-host=${OBFSHOST};obfs-uri=${OBFSURI};obfs=${OBFS}#Twist" | base64 -w 0)" | qr
-    echo -e "# [\033[32;1mss://\033[0m\033[34;1m$(echo -n "${METHOD}:${PASSWORD}@${PUBLICIP}:${PORT}?plugin=obfs-local;obfs-host=${OBFSHOST};obfs-uri=${OBFSURI};obfs=${OBFS}#Twist" | base64 -w 0)\033[0m]"
     echo -e "# [\033[32;1mServer IP:\033[0m \033[34;1m${PUBLICIP}\033[0m\c"
     [ ! "$IPV6ENABLE" = "false" ] && echo -e "(\033[34;1m${PUBLICIPv6}\033[0m)\c"
-    echo -e " \033[32;1mPassWord:\033[0m \033[34;1m${PASSWORD}\033[0m \033[32;1mEncryption:\033[0m \033[34;1m${METHOD}\033[0m \033[32;1mOBFS:\033[0m \033[34;1m${OBFS}\033[0m \033[32;1mOBFS-HOST:\033[0m \033[34;1m${OBFSHOST}\033[0m \033[32;1mOBFS-URI:\033[0m \033[34;1m${OBFSURI}\033[0m]"
+    echo -e " \033[32;1mPassWord:\033[0m \033[34;1m${PASSWORD}\033[0m \033[32;1mEncryption:\033[0m \033[34;1m${METHOD}\033[0m \033[32;1mOBFS-HOST:\033[0m \033[34;1m${OBFSHOST}\033[0m \033[32]"
     serverrestart "Installation"
 }
 
