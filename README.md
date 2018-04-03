@@ -55,7 +55,7 @@ Edit values in typename="**HERE**", save and run Twist after you have confirmed 
 ```txt
  PORT="443"                       # Server port
  PASSWORD=""                      # Password used for encryption, auto generate if left free
- METHOD="chacha20-ietf-poly1305" # Encryption, AEAD is better than OTA cipher which is already departed
+ METHOD="chacha20-ietf-poly1305"  # Encryption, AEAD is better than OTA cipher which is already departed
  TIMEOUT="600"                    # Drop connections if it not using in seconds
  OBFSHOST="google.com"            # Obfs host address
  FASTOPEN="true"                  # Use TCP fastopen that reduces TCP handshake time
@@ -64,7 +64,7 @@ Edit values in typename="**HERE**", save and run Twist after you have confirmed 
  DNS2="8.8.4.4"                   # Default DNSv4 server address 2 from Google Public DNS
  MODE="tcp_and_udp"               # Allow both connection use TCP and UDP
  MTU=""                           # Default mtu size, leave it blank to auto detect
- IPV6FIRST="false"                 # Use IPv6 default when available, auto off if no IPv6 address detected
+ IPV6FIRST="false"                # Use IPv6 default when available, auto off if no IPv6 address detected
  SYSLOG="true"                    # Export verbose log to /var/log/syslog
  NODELAY="true"                   # Reduce the TCP respond time delay
  FWS="enable"                     # Fake as a apache web server for concealing
